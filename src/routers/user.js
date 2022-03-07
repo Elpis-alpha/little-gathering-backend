@@ -16,7 +16,7 @@ const router = new express.Router()
 
 const upload = multer({
 
-  limits: { fileSize: 2000000 },
+  limits: { fileSize: 20000000 },
 
   fileFilter(req, file, cb) {
 
