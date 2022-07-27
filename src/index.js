@@ -1,16 +1,19 @@
+require('./middleware/init')
+
+require('./db/mongoose')
+
 const express = require('express')
 
 const chalk = require('chalk')
 
 const cors = require('cors')
 
-const mongoose = require('./db/mongoose')
-
 const userRouter = require('./routers/user')
 
 const postRouter = require('./routers/post')
 
 const commentRouter = require('./routers/comment')
+const delay = require('./middleware/delay')
 
 const port = process.env.PORT
 
@@ -22,26 +25,22 @@ const app = express()
 
 
 // Automatically parse incoming reqests
-app.use(express.json())
+app.use(express.json({ limit: "20mb" }))
 
-// app.use(express.urlencoded({limit: '20mb', extended: true, parameterLimit: 50000}))
+
+// Automatically parse form body and encodes
+app.use(express.urlencoded({ extended: true }))
+
 
 
 // Automatically allow incomming incoming cors
 app.use(cors())
 
 
-if (!isProduction) {
 
-  app.use(async (req, res, next) => {
+// One second delay for local development
+if (!isProduction) { app.use(delay) }
 
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    next()
-
-  })
-  
-}
 
 
 // Automatically allows user routers
@@ -59,8 +58,8 @@ app.use(commentRouter)
 // Listening Server
 app.listen(port, () => {
 
-  console.log(chalk.yellow('\n\nInitializing Server'));
+  console.log(chalk.hex('#009e00')(`Server started successfully on port ${port}`));
 
-  console.log(`Server starting on port ${port}`);
+  console.log(chalk.cyanBright(`Server time: ${new Date().toLocaleString()}`));
 
 })
